@@ -36,8 +36,16 @@ def main():
                 YawVec[PingNum] = GetYawFromCompass(PingNum + 1)
 
                 IndVec, rVec, NewImgTh = Shortproc_ping_dataRoee(
-                    PingData, params['matched_filter'], params['Rmin'], params['fs'], params['azBeams'], params['pos_sensors'], 
-                    params['pri_samples'], params['ImgTh'], FinalPingFlag, UpdateThFlag
+                    PingData, 
+                    params['matched_filter'],
+                    params['Rmin'], 
+                    params['fs'], 
+                    params['azBeams'], 
+                    params['pos_sensors'], 
+                    params['pri_samples'], 
+                    params['ImgTh'], 
+                    FinalPingFlag, 
+                    UpdateThFlag
                 )
                 
                 IndMat[PingNum, :len(IndVec)] = IndVec
