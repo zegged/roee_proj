@@ -19,9 +19,15 @@ def get_parameters():
     params['Ns'] = 4  # Number of hydrophones
     params['rs'] = 0.255  # sibenik, subnero
     params['teta_array'] = np.array([90, 0, -90, 180])  # sibenik exp setup: subnero
+    
+    '''
     params['pos_sensors'] = params['rs'] * np.array([np.sin(np.deg2rad(params['teta_array'])),
                                  np.cos(np.deg2rad(params['teta_array'])),
                                  np.zeros(params['Ns'])])  # 3 x Ns
+    '''
+    
+    params['pos_sensors'] = np.array([ params['rs'], 0, - params['rs'], 0, 0,  params['rs'], 0, - params['rs'], 0, 0, 0, 0])
+
 
     # Beam parameters
     params['Ratio'] = 5

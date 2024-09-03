@@ -21,7 +21,7 @@ def GetDataFromRam(pri_samples, n, Tgaurd):
             
             fs, data = wavfile.read(CurrentFileName)
             SigMat.append(data)
-
+        
         SigMat = np.array(SigMat)
         print(f"Loaded data shape: {SigMat.shape}")
 
