@@ -2,7 +2,7 @@ import GetDataFromRam
 
 
 
-import DetectionBlobsRoee
+import DetectionBlobsRoee_copy
 
 def test_GetDataFromRam():
     assert GetDataFromRam(pri_samples, n, Tgaurd) == , "Should be "

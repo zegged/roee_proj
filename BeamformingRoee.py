@@ -28,19 +28,23 @@ def BeamformingRoee(PingData, matched_filter, azBeams, pos_sensors, fs, pri_samp
 
         data_beam = np.zeros(PingData.shape[1])
         for k in range(4):  # Assuming 4 sensors
+            #print(pos_sensors[:, k])
             tau = 1/snd_vel * np.sum(pos_sensors[:, k] * np.array([u, w, v]))
             shift = int(round(tau * fs))
+
             if shift > 0:
-                data_beam += np.pad(PingData[k, shift:], (0, shift), mode='constant')
+                #print(PingData[k, shift:])
+                data_beam += np.concatenate((PingData[k, shift:], np.zeros(shift)))
             elif shift < 0:
-                data_beam += np.pad(PingData[k, :shift], (abs(shift), 0), mode='constant')
+                #print(PingData[k, :shift])
+                data_beam += np.concatenate((np.zeros(abs(shift)), PingData[k, :shift]))
             else:
+                #print(PingData[k, :])
                 data_beam += PingData[k, :]
 
+
         MF = np.abs(signal.convolve(matched_filter, data_beam, mode='full'))
+
         Beam[:, m] = MF[:pri_samples]
 
     return Beam
-
-# Example usage:
-# Beam = BeamformingRoee(PingData, matched_filter, azBeams, pos_sensors, fs, pri_samples)

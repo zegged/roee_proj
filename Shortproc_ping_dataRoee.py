@@ -2,6 +2,7 @@ import numpy as np
 from BeamformingRoee import BeamformingRoee
 from CalcBinary import CalcBinary
 from DetectionBlobsRoee import DetectionBlobsRoee
+import csvToArray as csv2A
 
 def Shortproc_ping_dataRoee(PingData, matched_filter, Rmin, fs, azBeams, pos_sensors, pri_samples, ImgTh, FinalPingFlag, UpdateThFlag):
     # Constants
@@ -11,8 +12,10 @@ def Shortproc_ping_dataRoee(PingData, matched_filter, Rmin, fs, azBeams, pos_sen
     rng_res = 1 / fs * snd_vel / 2
 
     # Beamforming
-    img = BeamformingRoee(PingData, matched_filter, azBeams, pos_sensors, fs, pri_samples)
+    #img = BeamformingRoee(PingData, matched_filter, azBeams, pos_sensors, fs, pri_samples)
+    img, _ = csv2A.load_csv_to_2d_array('C:/Users/ipewz/Desktop/roee_proj/forTest/img.csv')
 
+    print("UpdateThFlag", UpdateThFlag)
     if UpdateThFlag:
         BinaryMap = CalcBinary(img)
     else:
@@ -25,7 +28,10 @@ def Shortproc_ping_dataRoee(PingData, matched_filter, Rmin, fs, azBeams, pos_sen
         rVec = np.zeros(len(CL))
         for nn in range(len(CL)):
             rVec[nn] = Rmin + CL[nn] * rng_res
-            ind = np.argmax(img[int(CL[nn]), :])
+            aa=CL[nn]
+            bb=img[int(CL[nn]-1), :]
+            ind = np.argmax(img[int(np.floor(CL[nn]-1)), :])+1  # Find the index of the maximum value
+
             IndVec[nn] = ind
     else:
         IndVec = np.array([], dtype=int)
@@ -50,3 +56,4 @@ def CalcThCFAR(img):
     # Implement CFAR threshold calculation
     # Return the new threshold
     pass
+

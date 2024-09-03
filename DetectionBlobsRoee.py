@@ -1,37 +1,39 @@
+from scipy.ndimage import label
 import numpy as np
-from scipy import ndimage
 
 def DetectionBlobsRoee(BinaryMap, min_pixel, max_pixel):
-    """
-    This function detects blobs in a binary map and returns their mean row positions.
-    
-    Parameters:
-    BinaryMap : 2D numpy array
-        Binary image containing the blobs
-    min_pixel : int
-        Minimum number of pixels for a valid blob
-    max_pixel : int
-        Maximum number of pixels for a valid blob
-    
-    Returns:
-    ReportCL : numpy array
-        Mean row positions of valid blobs
-    """
-    # Find connected components
-    labeled_array, num_features = ndimage.label(BinaryMap, structure=np.ones((3,3)))
-    
-    imageRowCnt = BinaryMap.shape[0]
-    CL = 999 * np.ones(num_features)
-    NumObjects = 0
+    # Check the dimensionality of BinaryMap
+    if BinaryMap.ndim == 1:
+        structure = np.ones((3,), dtype=int)  # 1D structure for 1D BinaryMap
+    elif BinaryMap.ndim == 2:
+        structure = np.ones((3, 3), dtype=int)  # 2D structure for 2D BinaryMap
+    else:
+        raise ValueError("BinaryMap must be either 1D or 2D.")
 
-    for cnt in range(1, num_features + 1):
-        blob = np.where(labeled_array == cnt)
-        numOfPix = len(blob[0])
-        
-        if min_pixel <= numOfPix <= max_pixel:
-            CL[cnt-1] = np.mean(blob[0])
+    # Label connected components in the binary image
+    labeled_array, NumofObj = label(BinaryMap, structure=structure)
+
+    imageRowCnt = BinaryMap.shape[0]
+
+    CL = 999 * np.ones(NumofObj)
+    NumObjects = 0
+    for cnt in range(NumofObj):
+        ct = np.where(labeled_array == cnt + 1)
+        numOfPix = len(ct[0])
+        row = np.zeros(numOfPix)
+        col = np.zeros(numOfPix)
+        for cntpix in range(numOfPix):
+            II = ct[0][cntpix] % imageRowCnt
+            col[cntpix] = np.ceil(ct[0][cntpix] / imageRowCnt)
+            if II == 0:
+                II = imageRowCnt
+            row[cntpix] = II
+
+        XY = np.column_stack((col, row))
+        if min_pixel <= XY.shape[0] <= max_pixel:
+            CL[cnt] = np.mean(row+1)
             NumObjects += 1
 
-    ReportCL = CL[CL != 999]
-    
+    pos = np.where(CL != 999)[0]
+    ReportCL = CL[pos]
     return ReportCL
